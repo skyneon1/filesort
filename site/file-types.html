@@ -1,0 +1,78 @@
+<!doctype html>
+<!-- Copyright (c) 2026 FileSort. All rights reserved. See LICENSE. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>File types: which file goes into which folder - FileSort</title>
+<meta name="description" content="The full list of file extensions FileSort recognises and the folder each one is sorted into: Images, Documents, Videos, Audio, Archives, Code and more.">
+<meta name="author" content="FileSort">
+<meta name="copyright" content="&copy; 2026 FileSort">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="FileSort">
+<meta property="og:title" content="File types: which file goes into which folder - FileSort">
+<meta property="og:description" content="The full list of file extensions FileSort recognises and the folder each one is sorted into: Images, Documents, Videos, Audio, Archives, Code and more.">
+<meta property="og:url" content="https://filesort-five.vercel.app/file-types.html">
+<meta property="og:image" content="https://filesort-five.vercel.app/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://filesort-five.vercel.app/og.png">
+<link rel="canonical" href="https://filesort-five.vercel.app/file-types.html">
+<link rel="icon" href="favicon.svg">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="site"><div class="wrap">
+  <a class="logo" href="./"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M2 6.5A2.5 2.5 0 0 1 4.5 4h4.4c.7 0 1.3.3 1.8.8L12 6.2h7.5A2.5 2.5 0 0 1 22 8.7v8.8a2.5 2.5 0 0 1-2.5 2.5h-15A2.5 2.5 0 0 1 2 17.5z"/></svg>FileSort</a>
+  <nav><a href="./">Sort a folder</a><a href="guide.html">Guide</a><a href="file-types.html" class="here">File types</a><a href="help.html">Help</a></nav>
+</div></header>
+<main class="page"><div class="wrap">
+  <h1>File types and folders</h1>
+  <p class="intro">Which file goes into which folder when you sort by file type. FileSort knows 129 file endings in 12 groups.</p>
+
+  <table class="facts wide">
+    <tr><th>Folder</th><th>What it holds</th><th>File endings</th></tr>
+    <tr><td>Images</td><td>photos, screenshots, icons</td><td>jpg, jpeg, png, gif, webp, bmp, tif, tiff, svg, heic, heif, ico, avif, raw, cr2, nef, arw, dng</td></tr>
+    <tr><td>Videos</td><td>recordings, films, clips</td><td>mp4, mkv, mov, avi, webm, wmv, flv, m4v, mpg, mpeg, 3gp</td></tr>
+    <tr><td>Audio</td><td>music, voice memos, podcasts</td><td>mp3, wav, flac, aac, ogg, m4a, wma, opus, aiff, mid, midi</td></tr>
+    <tr><td>Documents</td><td>PDFs, letters, notes</td><td>pdf, doc, docx, odt, rtf, txt, md, tex, pages</td></tr>
+    <tr><td>Spreadsheets</td><td>tables, budgets, exports</td><td>xls, xlsx, xlsm, ods, csv, tsv, numbers</td></tr>
+    <tr><td>Presentations</td><td>slide decks</td><td>ppt, pptx, odp, key</td></tr>
+    <tr><td>Ebooks</td><td>books for e-readers</td><td>epub, mobi, azw, azw3, djvu</td></tr>
+    <tr><td>Archives</td><td>compressed folders, disk images</td><td>zip, rar, 7z, tar, gz, bz2, xz, tgz, zst, iso</td></tr>
+    <tr><td>Installers</td><td>programs to install</td><td>exe, msi, dmg, pkg, deb, rpm, appimage, apk</td></tr>
+    <tr><td>Code</td><td>scripts, web pages, data files</td><td>py, js, ts, jsx, tsx, html, css, scss, json, xml, yml, yaml, toml, sh, bat, ps1, c, h, cpp, hpp, cs, java, kt, go, rs, rb, php, swift, sql, ipynb, lua, r</td></tr>
+    <tr><td>Design</td><td>design and 3D files</td><td>psd, ai, fig, sketch, xd, indd, blend, obj, stl, fbx</td></tr>
+    <tr><td>Fonts</td><td>typefaces</td><td>ttf, otf, woff, woff2</td></tr>
+    <tr><td>Other</td><td>everything else</td><td>any ending not listed above, and files without an ending</td></tr>
+  </table>
+
+  <h2>How the ending is read</h2>
+  <p>The ending (also called the extension) is the part of the file name after the last dot. Upper and lower case make no difference: photo.JPG and photo.jpg both go to Images.</p>
+  <p>Only the last ending counts. backup.tar.gz ends in gz, so it goes to Archives.</p>
+  <p>FileSort looks at the name only. It does not open files to check what is really inside them.</p>
+
+  <h2>Sorting by extension instead</h2>
+  <p>If you sort by extension, the table above is not used. Each ending gets its own folder, named in lower case: jpg, pdf, zip. Files without an ending go into a folder called no_extension.</p>
+
+  <h2>Sorting by month</h2>
+  <p>The kind of file does not matter here. Each file goes into a folder named after the year and month it was last changed, for example 2026-11.</p>
+
+  <h2>Files that are never sorted</h2>
+  <table class="facts">
+    <tr><th>File</th><th>Why</th></tr>
+    <tr><td>Names starting with a dot, such as .gitignore</td><td>Hidden files. Sorted only if you switch on "Include hidden files".</td></tr>
+    <tr><td>desktop.ini, Thumbs.db</td><td>Windows keeps these in folders for its own use.</td></tr>
+    <tr><td>.filesort-undo.json</td><td>FileSort's own undo record.</td></tr>
+    <tr><td>Anything inside an app bundle, a code repository or node_modules</td><td>These only work as a whole.</td></tr>
+  </table>
+</div></main>
+<footer><div class="wrap">
+  <span>&copy; 2026 FileSort. All rights reserved.</span>
+  <span><a href="./">Sort a folder</a><a href="guide.html">Guide</a><a href="file-types.html">File types</a><a href="help.html">Help</a><a href="about.html">About</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a></span>
+</div></footer>
+
+</body>
+</html>

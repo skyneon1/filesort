@@ -156,3 +156,26 @@ table.facts td + td { color: #3b404b; }
 #picker[hidden] + .under { display: none; }
 .zip-note { margin: 16px 0 0; padding: 10px 14px; background: #fdf6e3; border-left: 4px solid #d9a514; font-size: 15px; color: #5c4a10; }
 #zip-hint { font-size: 14px; max-width: 520px; margin-left: auto; margin-right: auto; }
+
+/* reading pages */
+.page h2 { scroll-margin-top: 20px; }
+.page h3 { font-size: 17px; margin: 22px 0 4px; }
+.page h3 + p { margin-top: 0; }
+.page ul { padding-left: 22px; }
+.page li { margin: 4px 0; }
+.page a { color: var(--red-dark); }
+.page .toc { list-style: none; padding: 16px 20px; margin: 24px 0 0; background: var(--band); border-radius: 8px; max-width: 700px; columns: 2; }
+.page .toc li { margin: 0 0 6px; }
+.page .toc a { color: var(--ink); }
+table.facts.wide { max-width: 880px; }
+table.facts.wide td:first-child { font-weight: 600; white-space: nowrap; }
+.more { margin: 26px 0 0; color: var(--soft); }
+.more a { color: var(--red-dark); }
+footer span a:first-child { margin-left: 0; }
+@media (max-width: 640px) {
+  .site .wrap { height: auto; padding-top: 10px; padding-bottom: 10px; flex-wrap: wrap; gap: 4px 0; }
+  .site nav a { margin: 0 16px 0 0; font-size: 14px; }
+  .page .toc { columns: 1; }
+  footer a { margin: 0 16px 0 0; }
+  table.facts.wide td:first-child { white-space: normal; }
+}

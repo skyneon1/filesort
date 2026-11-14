@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://filesort-five.vercel.app/</loc></url>
+  <url><loc>https://filesort-five.vercel.app/guide.html</loc></url>
+  <url><loc>https://filesort-five.vercel.app/file-types.html</loc></url>
+  <url><loc>https://filesort-five.vercel.app/help.html</loc></url>
+  <url><loc>https://filesort-five.vercel.app/about.html</loc></url>
   <url><loc>https://filesort-five.vercel.app/privacy.html</loc></url>
+  <url><loc>https://filesort-five.vercel.app/terms.html</loc></url>
 </urlset>

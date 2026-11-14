@@ -1,0 +1,113 @@
+<!doctype html>
+<!-- Copyright (c) 2026 FileSort. All rights reserved. See LICENSE. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How to sort files into folders: step-by-step guide - FileSort</title>
+<meta name="description" content="Step-by-step guide to sorting a folder with FileSort: selecting a folder, sorting by file type, extension or month, the options, undo, and what differs between browsers.">
+<meta name="author" content="FileSort">
+<meta name="copyright" content="&copy; 2026 FileSort">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="FileSort">
+<meta property="og:title" content="How to sort files into folders: step-by-step guide - FileSort">
+<meta property="og:description" content="Step-by-step guide to sorting a folder with FileSort: selecting a folder, sorting by file type, extension or month, the options, undo, and what differs between browsers.">
+<meta property="og:url" content="https://filesort-five.vercel.app/guide.html">
+<meta property="og:image" content="https://filesort-five.vercel.app/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://filesort-five.vercel.app/og.png">
+<link rel="canonical" href="https://filesort-five.vercel.app/guide.html">
+<link rel="icon" href="favicon.svg">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="site"><div class="wrap">
+  <a class="logo" href="./"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M2 6.5A2.5 2.5 0 0 1 4.5 4h4.4c.7 0 1.3.3 1.8.8L12 6.2h7.5A2.5 2.5 0 0 1 22 8.7v8.8a2.5 2.5 0 0 1-2.5 2.5h-15A2.5 2.5 0 0 1 2 17.5z"/></svg>FileSort</a>
+  <nav><a href="./">Sort a folder</a><a href="guide.html" class="here">Guide</a><a href="file-types.html">File types</a><a href="help.html">Help</a></nav>
+</div></header>
+<main class="page"><div class="wrap">
+  <h1>How to sort files into folders</h1>
+  <p class="intro">A step-by-step guide to FileSort, with what each option does and what to expect in your browser.</p>
+
+  <ul class="toc">
+    <li><a href="#start">Before you start</a></li>
+    <li><a href="#select">1. Select the folder</a></li>
+    <li><a href="#mode">2. Choose how to sort</a></li>
+    <li><a href="#options">3. Set the options</a></li>
+    <li><a href="#check">4. Check the list</a></li>
+    <li><a href="#sort">5. Sort</a></li>
+    <li><a href="#undo">Undo</a></li>
+    <li><a href="#tips">Tips</a></li>
+  </ul>
+
+  <h2 id="start">Before you start</h2>
+  <p>FileSort takes the loose files in one folder and puts each of them into a subfolder. A folder with 300 mixed files becomes a folder with a handful of subfolders such as Images, Documents and Videos.</p>
+  <p>It only moves files. It does not delete, rename, compress or upload them. The one exception to "does not rename" is when two files with the same name would land in the same folder; see <a href="#check">step 4</a>.</p>
+  <p>If you want to see it work first, click "Try it with sample files first" on the <a href="./">start page</a>. That uses made-up example files, not yours.</p>
+
+  <h2 id="select">1. Select the folder</h2>
+  <p>Click Select folder and choose the folder you want to tidy. What happens next depends on your browser.</p>
+  <h3>Chrome and Edge</h3>
+  <p>The browser asks whether the site may view the files, and then whether it may save changes to the folder. Allow both. FileSort can then see that one folder and nothing else on your computer.</p>
+  <p>Chrome and Edge refuse to open a few system folders directly, including Downloads, Documents and Desktop. See <a href="#tips">Tips</a> for the way around this.</p>
+  <h3>Firefox and Safari</h3>
+  <p>The browser shows a question such as "Upload 240 files to this site?". The wording is the browser's, not ours. Nothing is uploaded: the files are only read on your computer. Choose Upload to continue.</p>
+  <h3>Phones and tablets</h3>
+  <p>Phones cannot select a folder, so the button says Select files. Pick the files you want sorted.</p>
+
+  <h2 id="mode">2. Choose how to sort</h2>
+  <p>There are three ways to sort. You can switch between them freely; the list below updates each time and nothing moves until you press the sort button.</p>
+  <table class="facts">
+    <tr><th>Sort by</th><th>Folders you get</th><th>Good for</th></tr>
+    <tr><td>File type</td><td>Images, Documents, Videos, Audio, Archives and so on</td><td>Most people. Few folders, easy to browse.</td></tr>
+    <tr><td>Extension</td><td>One folder per ending: jpg, png, pdf, zip</td><td>When you want jpg and png kept apart, or work with unusual file kinds.</td></tr>
+    <tr><td>Month</td><td>2026-11, 2026-10, 2026-09</td><td>Photos, scans and invoices, where "when" matters more than "what".</td></tr>
+  </table>
+  <p>The full list of which ending goes into which folder is on the <a href="file-types.html">File types</a> page.</p>
+  <p>Month uses the date the file was last changed, not the date it was created or downloaded.</p>
+
+  <h2 id="options">3. Set the options</h2>
+  <h3>Include subfolders</h3>
+  <p>Off: only the files lying directly in the folder are sorted. Folders inside it are left exactly as they are. This is the safe default.</p>
+  <p>On: files inside subfolders are taken out and sorted too. Programs and projects are never taken apart: app bundles, code repositories and folders such as node_modules are skipped as a whole.</p>
+  <h3>Include hidden files</h3>
+  <p>Hidden files are files whose name starts with a dot, such as .gitignore. They are skipped unless you switch this on. Most people should leave it off.</p>
+  <h3>Delete emptied folders</h3>
+  <p>Only available together with Include subfolders, and only in Chrome and Edge. After sorting, subfolders that are now empty are removed. Folders that were already empty before, or that still contain anything, are kept.</p>
+
+  <h2 id="check">4. Check the list</h2>
+  <p>You now see every folder that will be created and how many files go into it. Click a folder to see the files.</p>
+  <p>If a file is shown as "renamed to report (1).pdf", another file called report.pdf is already going to that folder. FileSort never overwrites a file, so the second one gets a number.</p>
+  <p>Files that are missing from the list are files FileSort leaves alone. The reasons are listed on the <a href="help.html#not-sorted">Help</a> page.</p>
+
+  <h2 id="sort">5. Sort</h2>
+  <h3>Chrome and Edge</h3>
+  <p>Press Sort files and confirm. The files are moved on your disk straight away. A folder with a few hundred files takes a second or two.</p>
+  <h3>Firefox, Safari and phones</h3>
+  <p>These browsers do not allow a website to change files on your disk. Press Download sorted copy and you get a .zip file containing a sorted copy of the folder. Unpack it where you want it. Your original folder is not changed, so you can delete it yourself once you are happy with the copy.</p>
+  <p>The copy can be at most 3.5 GB or 60,000 files.</p>
+
+  <h2 id="undo">Undo</h2>
+  <p>In Chrome and Edge, press Undo last sort to put every file back where it was. This also works later: open the same folder again and the button is there.</p>
+  <p>Undo relies on a small hidden file, .filesort-undo.json, that FileSort saves in the folder. If you delete it, that sort can no longer be undone.</p>
+  <p>If you created a new file with the same name in the old place in the meantime, undo leaves that one file where it is instead of overwriting yours, and tells you.</p>
+  <p>In Firefox and Safari there is nothing to undo, because the original folder is never changed.</p>
+
+  <h2 id="tips">Tips</h2>
+  <h3>Sorting your Downloads folder in Chrome or Edge</h3>
+  <p>Make a new folder inside Downloads, for example "To sort". Move the files into it, then select that folder in FileSort.</p>
+  <h3>Sorting again later</h3>
+  <p>You can run FileSort on the same folder as often as you like. Files that are already in the right subfolder stay there; only new loose files are moved.</p>
+  <h3>Important files</h3>
+  <p>Sorting is reversible, but keep a backup of files you cannot afford to lose, as you should anyway.</p>
+</div></main>
+<footer><div class="wrap">
+  <span>&copy; 2026 FileSort. All rights reserved.</span>
+  <span><a href="./">Sort a folder</a><a href="guide.html">Guide</a><a href="file-types.html">File types</a><a href="help.html">Help</a><a href="about.html">About</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a></span>
+</div></footer>
+
+</body>
+</html>
