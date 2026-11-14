@@ -1,0 +1,65 @@
+name: Build apps
+
+# Tests and builds FileSort on Windows, macOS and Linux on every push.
+# Pushing a tag like v1.0 also publishes the three files as a GitHub release.
+on:
+  workflow_dispatch:
+  push:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            file: FileSort-windows.exe
+          - os: macos-latest
+            file: FileSort-macos.zip
+          - os: ubuntu-22.04
+            file: FileSort-linux.tar.gz
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Tk and a virtual screen (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y python3-tk xvfb
+      - name: Run tests
+        shell: bash
+        run: |
+          if [ "${{ runner.os }}" = "Linux" ]; then xvfb-run -a python -m unittest discover -s tests -v
+          else python -m unittest discover -s tests -v; fi
+      - run: pip install pyinstaller
+      - run: python build.py
+      - name: Start the built program
+        shell: bash
+        run: |
+          case "${{ runner.os }}" in
+            Windows) python tests/launch_check.py dist/FileSort.exe ;;
+            macOS)   python tests/launch_check.py dist/FileSort.app/Contents/MacOS/FileSort ;;
+            Linux)   xvfb-run -a python tests/launch_check.py dist/FileSort ;;
+          esac
+      - name: Name the file
+        shell: bash
+        run: |
+          mkdir out
+          case "${{ runner.os }}" in
+            Windows) cp dist/FileSort.exe "out/${{ matrix.file }}" ;;
+            macOS)   (cd dist && zip -qry "../out/${{ matrix.file }}" FileSort.app) ;;
+            Linux)   tar -czf "out/${{ matrix.file }}" -C dist FileSort ;;
+          esac
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.file }}
+          path: out/${{ matrix.file }}
+      - name: Publish to release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: out/${{ matrix.file }}
