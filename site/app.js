@@ -35,7 +35,7 @@ for (const [name, exts] of Object.entries(CATEGORIES))
 // Files that belong to the operating system, never sorted.
 const SKIP_FILES = new Set(["desktop.ini", "thumbs.db"]);
 // Folders that only work as a whole. "Include subfolders" never reaches inside them.
-const SKIP_DIRS = new Set(["node_modules", "__pycache__"]);
+const SKIP_DIRS = new Set([".git", "node_modules", "__pycache__"]);
 const PACKAGE_SUFFIXES = [".app", ".framework", ".bundle", ".plugin", ".kext", ".photoslibrary", ".xcodeproj", ".xcworkspace"];
 
 // ------------------------------------------------------------------ core
@@ -241,10 +241,149 @@ async function pruneEmpty(root, plan) {
   return removed;
 }
 
+// ------------------------------------------- sorted copy as .zip (other browsers)
+// Firefox, Safari and phones cannot change files on disk. There the folder is
+// read (never uploaded) and a sorted copy is handed back as a .zip file.
+
+const ZIP_MAX_BYTES = 3.5e9; // plain zip format: 4 GB total, 65535 files
+const ZIP_MAX_FILES = 60000;
+
+function isProtectedPath(path, repoDirs) {
+  for (let depth = 1; depth <= path.length; depth++) {
+    const lower = path[depth - 1].toLowerCase();
+    if (SKIP_DIRS.has(lower) || PACKAGE_SUFFIXES.some((suffix) => lower.endsWith(suffix))) return true;
+    if (repoDirs.has(path.slice(0, depth).join("/"))) return true;
+  }
+  return false;
+}
+
+// Same rules as scan(), for a list of { file, name, path } read from a file input.
+function scanFiles(items, { mode, recursive, hidden }) {
+  const repoDirs = new Set(); // folders that contain a .git folder
+  for (const it of items) {
+    const at = it.path.indexOf(".git");
+    if (at > 0) repoDirs.add(it.path.slice(0, at).join("/"));
+  }
+  const usable = items.filter((it) => {
+    if (it.name === LOG_NAME || SKIP_FILES.has(it.name.toLowerCase())) return false;
+    if (!recursive && it.path.length) return false;
+    if (!hidden && (it.name.startsWith(".") || it.path.some((part) => part.startsWith(".")))) return false;
+    return !isProtectedPath(it.path, repoDirs);
+  }).map((it) => ({ ...it, folder: folderFor(it.name, mode, it.file.lastModified), from: [...it.path, it.name].join("/") }));
+  usable.sort((a, b) => a.from.localeCompare(b.from));
+
+  const taken = new Map();
+  const names = (folder) => { if (!taken.has(folder)) taken.set(folder, new Set()); return taken.get(folder); };
+  const plan = [];
+  plan.kept = []; // already in the right folder: copied as they are
+  for (const it of usable) {
+    if (it.path.length === 1 && it.path[0].toLowerCase() === it.folder.toLowerCase()) {
+      names(it.folder).add(it.name.toLowerCase());
+      plan.kept.push({ file: it.file, to: it.from });
+    }
+  }
+  for (const it of usable) {
+    if (it.path.length === 1 && it.path[0].toLowerCase() === it.folder.toLowerCase()) continue;
+    const destName = uniqueName(it.name, names(it.folder));
+    names(it.folder).add(destName.toLowerCase());
+    plan.push({ ...it, destName, to: `${it.folder}/${destName}` });
+  }
+  return plan;
+}
+
+const CRC_TABLE = (() => {
+  const table = new Uint32Array(256);
+  for (let n = 0; n < 256; n++) {
+    let c = n;
+    for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
+    table[n] = c >>> 0;
+  }
+  return table;
+})();
+
+async function crcOfFile(file) {
+  let crc = 0xffffffff;
+  const feed = (bytes) => { for (let i = 0; i < bytes.length; i++) crc = CRC_TABLE[(crc ^ bytes[i]) & 0xff] ^ (crc >>> 8); };
+  if (file.stream) {
+    const reader = file.stream().getReader();
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      feed(value);
+    }
+  } else {
+    feed(new Uint8Array(await file.arrayBuffer()));
+  }
+  return (crc ^ 0xffffffff) >>> 0;
+}
+
+// Builds an uncompressed .zip. Files are referenced, not copied into memory.
+async function buildZip(entries, onProgress) {
+  const encoder = new TextEncoder();
+  const parts = [], central = [];
+  let offset = 0;
+  for (let i = 0; i < entries.length; i++) {
+    const { path, file } = entries[i];
+    const name = encoder.encode(path);
+    const crc = await crcOfFile(file);
+    const d = new Date(file.lastModified || Date.now());
+    const time = (d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSeconds() >> 1);
+    const date = ((Math.max(d.getFullYear(), 1980) - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate();
+
+    const local = new DataView(new ArrayBuffer(30));
+    local.setUint32(0, 0x04034b50, true);
+    local.setUint16(4, 20, true);
+    local.setUint16(6, 0x0800, true); // file names are UTF-8
+    local.setUint16(10, time, true);
+    local.setUint16(12, date, true);
+    local.setUint32(14, crc, true);
+    local.setUint32(18, file.size, true);
+    local.setUint32(22, file.size, true);
+    local.setUint16(26, name.length, true);
+    parts.push(local, name, file);
+
+    const entry = new DataView(new ArrayBuffer(46));
+    entry.setUint32(0, 0x02014b50, true);
+    entry.setUint16(4, 0x0314, true); // made on Unix: every unzip tool then reads names as UTF-8
+    entry.setUint16(6, 20, true);
+    entry.setUint16(8, 0x0800, true);
+    entry.setUint16(12, time, true);
+    entry.setUint16(14, date, true);
+    entry.setUint32(16, crc, true);
+    entry.setUint32(20, file.size, true);
+    entry.setUint32(24, file.size, true);
+    entry.setUint16(28, name.length, true);
+    entry.setUint32(38, (0o100644 << 16) >>> 0, true); // normal file permissions
+    entry.setUint32(42, offset, true);
+    central.push(entry, name);
+
+    offset += 30 + name.length + file.size;
+    if (onProgress) onProgress(i + 1, entries.length);
+  }
+  const centralSize = central.reduce((total, part) => total + part.byteLength, 0);
+  const end = new DataView(new ArrayBuffer(22));
+  end.setUint32(0, 0x06054b50, true);
+  end.setUint16(8, entries.length, true);
+  end.setUint16(10, entries.length, true);
+  end.setUint32(12, centralSize, true);
+  end.setUint32(16, offset, true);
+  return new Blob([...parts, ...central, end], { type: "application/zip" });
+}
+
+function saveBlob(blob, filename) {
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(link.href), 60000);
+}
+
 // -------------------------------------------------------------------- UI
 
 const $ = (id) => document.getElementById(id);
-const state = { root: null, plan: [], busy: false, token: 0, memoryRun: null, demo: false };
+const state = { root: null, files: null, rootName: "", plan: [], busy: false, token: 0, memoryRun: null, demo: false };
 const canPick = "showDirectoryPicker" in window;
 const canDemo = !!(navigator.storage && navigator.storage.getDirectory);
 const plural = (n, word) => `${n} ${word}${n === 1 ? "" : "s"}`;
@@ -285,10 +424,16 @@ function showProgress(done, total) {
 
 async function refreshButtons() {
   const idle = !state.busy;
+  const count = plural(state.plan.length, "file");
   $("go").disabled = !idle || !state.plan.length;
-  $("go").textContent = state.plan.length ? `Sort ${plural(state.plan.length, "file")}` : "Sort files";
+  if (state.files) $("go").textContent = state.plan.length ? `Download sorted copy of ${count} (.zip)` : "Download sorted copy (.zip)";
+  else $("go").textContent = state.plan.length ? `Sort ${count}` : "Sort files";
   for (const el of document.querySelectorAll("#workspace input, #modes button, #rescan, #change")) el.disabled = !idle;
   $("opt-prune").disabled = !idle || !$("opt-recursive").checked;
+  $("prune-label").hidden = !!state.files;
+  $("undo").hidden = !!state.files;
+  $("rescan").hidden = !!state.files;
+  $("zip-note").hidden = !state.files;
   let last = null;
   if (state.root) {
     const runs = await readLog(state.root);
@@ -323,15 +468,15 @@ function render() {
 }
 
 async function rescan(keepStatus) {
-  if (!state.root) return;
+  if (!state.root && !state.files) return;
   const token = ++state.token;
   if (!keepStatus) setStatus("Reading folder…");
   try {
-    const plan = await scan(state.root, options());
+    const plan = state.files ? scanFiles(state.files, options()) : await scan(state.root, options());
     if (token !== state.token) return; // a newer scan replaced this one
     state.plan = plan;
     render();
-    if (!keepStatus) setStatus(plan.length ? "Nothing has been moved yet." : "");
+    if (!keepStatus) setStatus(plan.length && !state.files ? "Nothing has been moved yet." : "");
   } catch (err) {
     if (token !== state.token) return;
     state.plan = [];
@@ -343,6 +488,7 @@ async function rescan(keepStatus) {
 
 async function openFolder(handle, demo = false) {
   state.root = handle;
+  state.files = null;
   state.demo = demo;
   state.memoryRun = null;
   $("folder-name").textContent = demo ? "Sample files (not your real files)" : handle.name;
@@ -352,11 +498,33 @@ async function openFolder(handle, demo = false) {
   await rescan();
 }
 
+// Other browsers: files chosen through a normal file input. Read-only.
+async function openFiles(fileList) {
+  const files = [...fileList];
+  if (!files.length) return;
+  const withFolder = files.some((f) => f.webkitRelativePath);
+  state.files = files.map((file) => {
+    const parts = (file.webkitRelativePath || file.name).split("/");
+    const name = parts.pop();
+    return { file, name, path: withFolder ? parts.slice(1) : [] };
+  });
+  state.rootName = withFolder ? files[0].webkitRelativePath.split("/")[0] : "files";
+  state.root = null;
+  state.demo = false;
+  $("folder-name").textContent = withFolder ? state.rootName : plural(files.length, "selected file");
+  $("picker").hidden = true;
+  $("workspace").hidden = false;
+  setNote("");
+  await rescan();
+}
+
 function closeFolder() {
   if (state.busy) return;
   state.root = null;
+  state.files = null;
   state.plan = [];
   state.token++;
+  $("dir-input").value = "";
   $("workspace").hidden = true;
   $("picker").hidden = false;
 }
@@ -396,8 +564,31 @@ async function openDemo() {
   }
 }
 
+async function downloadSortedCopy() {
+  const plan = state.plan;
+  const all = [...plan.map((p) => ({ file: p.file, to: p.to })), ...(plan.kept || [])];
+  const bytes = all.reduce((total, entry) => total + entry.file.size, 0);
+  if (all.length > ZIP_MAX_FILES || bytes > ZIP_MAX_BYTES) {
+    return setStatus("This folder is too large for a .zip copy in the browser (limit: 3.5 GB or 60,000 files). Use Chrome or Edge, or the desktop app.", "bad");
+  }
+  const folders = new Set(plan.map((p) => p.folder));
+  const top = `${state.rootName} sorted`;
+  setBusy(true);
+  setStatus("Preparing the sorted copy…");
+  try {
+    const blob = await buildZip(all.map((entry) => ({ path: `${top}/${entry.to}`, file: entry.file })), showProgress);
+    saveBlob(blob, `${top}.zip`);
+    setBusy(false);
+    setStatus(`Done. "${top}.zip" holds ${plural(all.length, "file")} in ${plural(folders.size, "folder")}. Unpack it to get the sorted folder. Your original files were not changed.`, "good");
+  } catch (err) {
+    setBusy(false);
+    setStatus(`Could not create the copy: ${err.message || err.name}`, "bad");
+  }
+}
+
 async function organize() {
   if (state.busy || !state.plan.length) return;
+  if (state.files) return downloadSortedCopy();
   const opts = options();
   const plan = state.plan;
   const folders = new Set(plan.map((p) => p.folder));
@@ -432,7 +623,10 @@ async function undo() {
 }
 
 function setupTool() {
-  $("pick").addEventListener("click", pickFolder);
+  const input = $("dir-input");
+  const canPickFolderReadOnly = "webkitdirectory" in input;
+  $("pick").addEventListener("click", canPick ? pickFolder : () => input.click());
+  input.addEventListener("change", () => openFiles(input.files));
   $("change").addEventListener("click", closeFolder);
   $("demo").addEventListener("click", openDemo);
   $("go").addEventListener("click", organize);
@@ -452,10 +646,12 @@ function setupTool() {
     });
   }
 
-  if (!canPick) {
-    $("pick").hidden = true;
+  if (!canPick) { // Firefox, Safari, phones: read the folder, give back a sorted .zip
+    input.multiple = true;
+    if (canPickFolderReadOnly) input.webkitdirectory = true;
+    else $("pick").textContent = "Select files";
     $("drop-hint").hidden = true;
-    $("unsupported").hidden = false;
+    $("zip-hint").hidden = false;
   }
   if (!canDemo) $("demo").hidden = true;
 
@@ -467,7 +663,7 @@ function setupTool() {
     document.body.classList.remove("dragging");
     const item = e.dataTransfer.items && e.dataTransfer.items[0];
     if (!item || state.busy) return;
-    if (!item.getAsFileSystemHandle) return setNote("This browser cannot open folders. Use Chrome or Edge, or download the app.");
+    if (!item.getAsFileSystemHandle) return setNote("Dropping a folder does not work in this browser. Use the Select button.");
     const handle = await item.getAsFileSystemHandle();
     if (!handle || handle.kind !== "directory") return setNote("Drop a folder, not a file.");
     if ((await handle.requestPermission({ mode: "readwrite" })) === "granted") openFolder(handle);

@@ -20,7 +20,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://filesort-five.vercel.app/og.png">
 <link rel="canonical" href="https://filesort-five.vercel.app/">
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "FileSort", "url": "https://filesort-five.vercel.app/", "description": "Free online file organizer. Select a folder and FileSort moves every file into a subfolder by file type, extension or month. Nothing is uploaded. One-click undo.", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Windows, macOS, Linux", "browserRequirements": "Requires Chrome or Edge on a desktop computer", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "FileSort", "url": "https://filesort-five.vercel.app/", "description": "Free online file organizer. Select a folder and FileSort moves every file into a subfolder by file type, extension or month. Nothing is uploaded. One-click undo.", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Windows, macOS, Linux", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script>
 <link rel="icon" href="favicon.svg">
 <link rel="stylesheet" href="style.css">
 </head>
@@ -38,11 +38,12 @@
   <div id="picker" class="drop">
     <button id="pick" class="btn red large">Select folder</button>
     <p id="drop-hint">or drop a folder here</p>
-    <p id="unsupported" hidden>This browser cannot open folders. Use Chrome or Edge on a computer, or <a href="download.html">download the app</a>.</p>
+    <input type="file" id="dir-input" hidden>
+    <p id="zip-hint" hidden>In this browser you get a sorted copy as a .zip file. The folder itself is not changed.<br>Your browser may ask you to confirm an "upload". Nothing is sent anywhere: the files are only read on your computer.</p>
     <p id="note" class="note" hidden></p>
     <p><button id="demo" class="link">Try it with sample files first</button></p>
   </div>
-  <p class="under">Free, no sign-up. Works in Chrome and Edge on a computer. For other browsers there is a <a href="download.html">desktop app</a>.</p>
+  <p class="under">Free, no sign-up. Chrome and Edge sort the folder itself. Other browsers give you a sorted copy to download. There is also a <a href="download.html">desktop app</a>.</p>
 
   <div id="workspace" hidden>
     <div class="ws-head">
@@ -60,9 +61,10 @@
         <span class="by">Options</span>
         <label><input type="checkbox" id="opt-recursive"> Include subfolders</label>
         <label><input type="checkbox" id="opt-hidden"> Include hidden files</label>
-        <label><input type="checkbox" id="opt-prune" disabled> Delete emptied folders</label>
+        <label id="prune-label"><input type="checkbox" id="opt-prune" disabled> Delete emptied folders</label>
       </div>
     </div>
+    <p id="zip-note" class="zip-note" hidden>This browser cannot change files on your disk. You will get a sorted copy as a .zip file, and your original files stay as they are.</p>
     <p id="summary"></p>
     <div id="rows" class="rows"></div>
     <div id="progress" hidden><div id="progress-bar"></div></div>
@@ -87,7 +89,7 @@
   <details><summary>What does "Include subfolders" do?</summary><p>Normally only the files directly in the folder are sorted and subfolders are left alone. With this option, files inside subfolders are sorted too. Programs and projects are never taken apart: app bundles, code repositories and folders such as node_modules are skipped.</p></details>
   <details><summary>What if two files have the same name?</summary><p>Nothing is ever overwritten. The second file is renamed, for example report (1).pdf.</p></details>
   <details><summary>Can I undo it?</summary><p>Yes. Open the same folder again and press Undo last sort. To make this possible, a small hidden file named .filesort-undo.json is kept in the folder.</p></details>
-  <details><summary>Which browsers does it work in?</summary><p>Chrome and Edge on Windows, Mac and Linux. Firefox, Safari and phones cannot give a website access to a folder. For those, use the <a href="download.html">desktop app</a>.</p></details>
+  <details><summary>Which browsers does it work in?</summary><p>All current browsers. In Chrome and Edge on a computer, the folder itself is sorted and you can undo it. Firefox, Safari and phones do not let a website change files on your disk, so there you get a sorted copy of the folder as a .zip file to download, and your original files stay untouched. The <a href="download.html">desktop app</a> sorts the folder itself on any computer.</p></details>
   <details><summary>Why can I not select my Downloads or Documents folder?</summary><p>Chrome and Edge block websites from opening some system folders directly. Select a folder inside it instead, or use the <a href="download.html">desktop app</a>, which has no such limit.</p></details>
 </div></section>
 </main>

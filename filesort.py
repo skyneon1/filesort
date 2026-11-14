@@ -59,7 +59,7 @@ def folder_for(path: Path, mode: str = "extension") -> str:
 # Files that belong to the operating system, never sorted.
 SKIP_FILES = {"desktop.ini", "thumbs.db"}
 # Folders that only work as a whole. "Include subfolders" never reaches inside them.
-SKIP_DIRS = {"node_modules", "__pycache__"}
+SKIP_DIRS = {".git", "node_modules", "__pycache__"}
 PACKAGE_SUFFIXES = (".app", ".framework", ".bundle", ".plugin", ".kext", ".photoslibrary",
                     ".xcodeproj", ".xcworkspace")
 

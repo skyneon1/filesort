@@ -161,3 +161,5 @@ table.facts td + td { color: #3b404b; }
   .ws-opts .by { width: 100%; }
 }
 #picker[hidden] + .under { display: none; }
+.zip-note { margin: 16px 0 0; padding: 10px 14px; background: #fdf6e3; border-left: 4px solid #d9a514; font-size: 15px; color: #5c4a10; }
+#zip-hint { font-size: 14px; max-width: 520px; margin-left: auto; margin-right: auto; }
