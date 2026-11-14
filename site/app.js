@@ -6,13 +6,12 @@ const LOG_NAME = ".filesort-undo.json"; // same log the desktop app writes
 const NO_EXT = "no_extension";
 const PREVIEW_LIMIT = 200;
 
-// Where the download buttons point. Relative paths are files you put in
-// site/downloads/. You can also use full URLs, e.g. GitHub release assets:
-//   "https://github.com/OWNER/REPO/releases/latest/download/FileSort-windows.exe"
+// Where the download buttons point: the files of the latest GitHub release.
+const RELEASE = "https://github.com/skyneon1/filesort/releases/latest/download/";
 const DOWNLOADS = {
-  windows: "downloads/FileSort-windows.exe",
-  macos: "downloads/FileSort-macos.zip",
-  linux: "downloads/FileSort-linux.tar.gz",
+  windows: RELEASE + "FileSort-windows.exe",
+  macos: RELEASE + "FileSort-macos.zip",
+  linux: RELEASE + "FileSort-linux.tar.gz",
 };
 
 const CATEGORIES = {

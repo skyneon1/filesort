@@ -17,9 +17,8 @@ Preview first, never overwrites, one-click undo.
 It is plain HTML + JS with no build step and no backend, so any free static host works
 (GitHub Pages, Cloudflare Pages, Netlify, Vercel): upload the `site/` folder.
 
-Download buttons point at `site/downloads/FileSort-windows.exe`, `FileSort-macos.zip`
-and `FileSort-linux.tar.gz`. A button shows "Coming soon" until its file exists. To use GitHub
-release links instead, edit `DOWNLOADS` at the top of `site/app.js`.
+The download buttons point at the files of the latest GitHub release (see `RELEASE` at the
+top of `site/app.js`).
 
 ## Desktop app
 
