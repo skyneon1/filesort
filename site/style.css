@@ -140,13 +140,6 @@ footer a:hover { text-decoration: underline; }
 
 /* download + privacy */
 .page .intro { font-size: 19px; color: var(--soft); margin: 0 0 8px; }
-.dl-main { margin: 28px 0 8px; padding: 28px 24px; background: var(--band); border-radius: 10px; max-width: 700px; text-align: center; }
-.dl-main a { display: inline-block; text-decoration: none; }
-.dl-main p { margin: 12px 0 0; font-size: 14px; color: var(--soft); max-width: none; }
-.dl-main a[hidden] + p { margin: 0; font-size: 16px; }
-.files { margin: 12px 0 0; }
-.files li.mine { background: none; }
-.files li.mine strong::after { content: "your system"; margin-left: 8px; font-size: 12px; font-weight: 500; color: var(--soft); border: 1px solid var(--line); border-radius: 4px; padding: 1px 6px; }
 table.facts { border-collapse: collapse; width: 100%; max-width: 700px; margin: 12px 0 0; font-size: 15px; }
 table.facts th, table.facts td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
 table.facts th { font-size: 13px; color: var(--soft); font-weight: 600; border-bottom-color: #b9bec8; }

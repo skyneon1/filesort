@@ -17,10 +17,9 @@ Preview first, never overwrites, one-click undo.
 It is plain HTML + JS with no build step and no backend, so any free static host works
 (GitHub Pages, Cloudflare Pages, Netlify, Vercel): upload the `site/` folder.
 
-The download buttons point at the files of the latest GitHub release (see `RELEASE` at the
-top of `site/app.js`).
-
 ## Desktop app
+
+Not offered on the website; the code is kept here for anyone who wants to build it.
 
     pip install pyinstaller
     python build.py          # result in dist/, for the OS you ran it on

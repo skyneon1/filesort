@@ -2,17 +2,10 @@
 // FileSort web app. Everything runs in the browser through the File System
 // Access API: no upload, no server, no account.
 
-const LOG_NAME = ".filesort-undo.json"; // same log the desktop app writes
+const LOG_NAME = ".filesort-undo.json";
 const NO_EXT = "no_extension";
 const PREVIEW_LIMIT = 200;
 
-// Where the download buttons point: the files of the latest GitHub release.
-const RELEASE = "https://github.com/skyneon1/filesort/releases/latest/download/";
-const DOWNLOADS = {
-  windows: RELEASE + "FileSort-windows.exe",
-  macos: RELEASE + "FileSort-macos.zip",
-  linux: RELEASE + "FileSort-linux.tar.gz",
-};
 
 const CATEGORIES = {
   Images: "jpg jpeg png gif webp bmp tif tiff svg heic heif ico avif raw cr2 nef arw dng",
@@ -569,7 +562,7 @@ async function downloadSortedCopy() {
   const all = [...plan.map((p) => ({ file: p.file, to: p.to })), ...(plan.kept || [])];
   const bytes = all.reduce((total, entry) => total + entry.file.size, 0);
   if (all.length > ZIP_MAX_FILES || bytes > ZIP_MAX_BYTES) {
-    return setStatus("This folder is too large for a .zip copy in the browser (limit: 3.5 GB or 60,000 files). Use Chrome or Edge, or the desktop app.", "bad");
+    return setStatus("This folder is too large for a .zip copy in the browser (limit: 3.5 GB or 60,000 files). Use Chrome or Edge on a computer, or sort a smaller folder.", "bad");
   }
   const folders = new Set(plan.map((p) => p.folder));
   const top = `${state.rootName} sorted`;
@@ -670,41 +663,4 @@ function setupTool() {
   });
 }
 
-async function setupDownloads() {
-  if (!$("dl-main")) return;
-  const names = { windows: "Windows", macos: "Mac", linux: "Linux" };
-  const ua = navigator.userAgent;
-  const mine = /Windows/.test(ua) ? "windows" : /Mac/.test(ua) ? "macos" : /Linux/.test(ua) ? "linux" : "";
-  const ready = {};
-  await Promise.all(Object.entries(DOWNLOADS).map(async ([os, url]) => {
-    const link = $(`dl-${os}`);
-    link.href = url;
-    ready[os] = true;
-    if (/^https?:/.test(url)) return; // full URL (e.g. a release link): assume it exists
-    try {
-      const res = await fetch(url, { method: "HEAD" });
-      if (!res.ok) throw new Error("missing");
-      const bytes = Number(res.headers.get("content-length"));
-      if (bytes) $(`info-${os}`).textContent += `, ${Math.round(bytes / 1048576)} MB`;
-    } catch (_) {
-      ready[os] = false;
-      link.removeAttribute("href");
-      link.classList.add("off");
-      link.textContent = "Not available yet";
-    }
-  }));
-  if (!mine) return;
-  $(`dl-${mine}`).closest("li").classList.add("mine");
-  $(`start-${mine}`).open = true;
-  if (ready[mine]) {
-    $("dl-main").href = DOWNLOADS[mine];
-    $("dl-main").textContent = `Download for ${names[mine]}`;
-    $("dl-main").hidden = false;
-    $("dl-main-info").textContent = `${$(`info-${mine}`).textContent}. Free.`;
-  } else {
-    $("dl-main-info").textContent = `The ${names[mine]} version is not available yet.`;
-  }
-}
-
 if ($("pick")) setupTool();
-setupDownloads();
