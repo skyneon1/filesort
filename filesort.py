@@ -172,7 +172,7 @@ def load_log(root: Path) -> list[dict]:
     if not log_path.exists():
         return []
     try:
-        return json.loads(log_path.read_text())
+        return json.loads(log_path.read_text(encoding="utf-8"))
     except (json.JSONDecodeError, OSError):
         raise RuntimeError(f"Could not read {log_path}; it looks corrupted.")
 
@@ -206,7 +206,7 @@ def apply_plan(root: Path, plan: list[tuple[Path, Path]], on_progress=None):
     if moves:
         runs = load_log(root)
         runs.append({"time": datetime.now().isoformat(timespec="seconds"), "moves": moves})
-        (root / LOG_NAME).write_text(json.dumps(runs, indent=2))
+        (root / LOG_NAME).write_text(json.dumps(runs, indent=2), encoding="utf-8")
     return moves, failures
 
 
@@ -248,7 +248,7 @@ def undo_last(root: Path, on_progress=None):
         runs.append({"time": last["time"], "moves": list(reversed(remaining))})
     log_path = root / LOG_NAME
     if runs:
-        log_path.write_text(json.dumps(runs, indent=2))
+        log_path.write_text(json.dumps(runs, indent=2), encoding="utf-8")
     else:
         log_path.unlink()
     return restored, problems

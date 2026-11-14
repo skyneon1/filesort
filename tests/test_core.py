@@ -16,11 +16,11 @@ def make(root: Path, *names: str) -> None:
     for name in names:
         path = root / name
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(name)  # content = original path, to prove nothing gets overwritten
+        path.write_text(name, encoding="utf-8")  # content = original path, to prove nothing gets overwritten
 
 
 def snapshot(root: Path) -> dict:
-    return {p.relative_to(root).as_posix(): p.read_text()
+    return {p.relative_to(root).as_posix(): p.read_text(encoding="utf-8")
             for p in root.rglob("*") if p.is_file() and p.name != core.LOG_NAME}
 
 
@@ -131,7 +131,7 @@ class CoreTests(unittest.TestCase):
     def test_log_uses_forward_slashes(self):
         make(self.root, "sub/a.txt")
         self.sort(recursive=True)
-        log = json.loads((self.root / core.LOG_NAME).read_text())
+        log = json.loads((self.root / core.LOG_NAME).read_text(encoding="utf-8"))
         self.assertEqual(log[-1]["moves"], [{"from": "sub/a.txt", "to": "txt/a.txt"}])
 
     def test_unicode_and_spaces(self):
