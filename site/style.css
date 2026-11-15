@@ -190,3 +190,9 @@ footer span a:first-child { margin-left: 0; }
 .feedback .hp { position: absolute; left: -9999px; }
 .feedback button { justify-self: start; }
 .feedback .status { margin: 0; }
+
+/* how-to articles */
+.page ol { padding-left: 22px; }
+.page .cta { margin: 24px 0; }
+.page a.btn.red { color: #fff; text-decoration: none; display: inline-block; padding: 12px 22px; font-size: 16px; }
+.more + .more { margin-top: 10px; font-size: 15px; }
