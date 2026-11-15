@@ -3,5 +3,27 @@
   "buildCommand": null,
   "installCommand": null,
   "outputDirectory": "site",
-  "redirects": [{ "source": "/download.html", "destination": "/", "permanent": false }]
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "filesort-five.vercel.app"
+        }
+      ],
+      "destination": "https://www.filesort.in/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/download.html",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/index.html",
+      "destination": "/",
+      "permanent": true
+    }
+  ]
 }

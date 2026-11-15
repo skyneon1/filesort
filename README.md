@@ -4,7 +4,7 @@ Sorts a messy folder into neat subfolders — by extension (`jpg/`, `pdf/`),
 by file type (`Images/`, `Documents/`) or by month (`2026-11/`).
 Preview first, never overwrites, one-click undo.
 
-Live site: https://filesort-five.vercel.app/
+Live site: https://www.filesort.in/
 
 | Part | Where | What it is |
 |------|-------|-----------|
