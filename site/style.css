@@ -179,3 +179,14 @@ footer span a:first-child { margin-left: 0; }
   footer a { margin: 0 16px 0 0; }
   table.facts.wide td:first-child { white-space: normal; }
 }
+
+/* feedback form */
+.feedback { max-width: 620px; margin-top: 24px; display: grid; gap: 18px; }
+.feedback label { display: grid; gap: 6px; font-weight: 600; font-size: 15px; }
+.feedback .opt { font-weight: 400; color: var(--soft); }
+.feedback input, .feedback select, .feedback textarea { font: inherit; font-weight: 400; padding: 10px 12px; border: 1px solid #b9bec8; border-radius: 6px; background: #fff; color: var(--ink); }
+.feedback textarea { resize: vertical; }
+.feedback input:focus, .feedback select:focus, .feedback textarea:focus { outline: 2px solid var(--ink); outline-offset: 1px; }
+.feedback .hp { position: absolute; left: -9999px; }
+.feedback button { justify-self: start; }
+.feedback .status { margin: 0; }
